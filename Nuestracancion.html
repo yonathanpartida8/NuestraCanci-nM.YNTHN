@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nuestra Canción - Te Amo</title>
+    <style>
+        /* ================= DEGRADADO DINÁMICO & FUENTES ================= */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;1,700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a18cd1, #fbc2eb);
+            background-size: 300% 300%;
+            animation: gradientAnim 12s ease infinite;
+            overflow: hidden;
+            perspective: 1200px;
+            padding: 20px;
+        }
+
+        @keyframes gradientAnim {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ================= EFECTOS LINDOS: CORAZONES FLOTANTES ================= */
+        #hearts-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 24px;
+            animation: floatUp linear forwards;
+            filter: drop-shadow(0 0 10px rgba(255,154,158,0.9));
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.6) rotate(0deg); opacity: 0; }
+            15% { opacity: 0.9; }
+            50% { transform: translateY(-50vh) scale(1.3) rotate(25deg); }
+            100% { transform: translateY(-120vh) scale(1) rotate(-25deg); opacity: 0; }
+        }
+
+        /* ================= ENTORNO DE INTERACCIÓN 3D ================= */
+        .interactive-stage {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+            z-index: 10;
+        }
+
+        /* ================= CRISTAL REFORZADO (GLASSMORPHISM) ================= */
+        .player-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-top: 1px solid rgba(255, 255, 255, 0.8);
+            border-left: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 46px;
+            padding: 55px 36px 45px 36px;
+            width: 100%;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15), 
+                        inset 0 0 40px rgba(255, 255, 255, 0.3);
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            transform-style: preserve-3d;
+            /* La transición se activa principalmente al soltar la tarjeta para que vuelva suavemente */
+            transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s ease;
+            will-change: transform;
+        }
+
+        /* Al interactuar, quitamos la transición para que el movimiento sea fluido e instantáneo con el dedo/ratón */
+        .player-card.interacting {
+            transition: transform 0.1s ease-out;
+        }
+
+        .player-card.music-playing {
+            box-shadow: 0 40px 100px rgba(161, 140, 209, 0.5), 
+                        0 0 70px rgba(255, 154, 158, 0.4),
+                        inset 0 0 40px rgba(255, 255, 255, 0.5);
+        }
+
+        /* ================= TEXTOS ROMÁNTICOS ================= */
+        .title-group {
+            transform: translateZ(50px);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            color: #ffffff;
+            text-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            color: #fff;
+            font-style: italic;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 35px #ff9a9e;
+            animation: pulseText 2.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseText {
+            0% { transform: scale(1); opacity: 0.85; }
+            100% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 50px #ff9a9e; }
+        }
+
+        /* ================= ARTE ================= */
+        .vinculo-frame {
+            width: 100%;
+            max-width: 210px;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 25px 55px rgba(0,0,0,0.25);
+            transform: translateZ(60px);
+            position: relative;
+            animation: floatMotion 7s ease-in-out infinite;
+        }
+
+        @keyframes floatMotion {
+            0%, 100% { transform: translateZ(60px) translateY(0px); }
+            50% { transform: translateZ(70px) translateY(-10px); }
+        }
+
+        .vinculo-img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            display: block;
+            object-fit: cover;
+        }
+
+        /* ================= VINILO HD ================= */
+        .vinyl-deck {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+            transform: translateZ(70px);
+            will-change: transform;
+        }
+
+        .vinyl-deck::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: linear-gradient(115deg, transparent 33%, rgba(255,255,255,0.2) 37%, transparent 42%, transparent 62%, rgba(255,255,255,0.15) 66%, transparent 70%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .vinyl-body {
+            width: 100%;
+            height: 100%;
+            background: #111;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background-image: repeating-radial-gradient(#111, #111 3px, #1c1c1c 4px, #1c1c1c 5px);
+            animation: spinDisc 4s linear infinite;
+            animation-play-state: paused;
+        }
+
+        @keyframes spinDisc {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .vinyl-body::before {
+            content: '';
+            width: 46px;
+            height: 46px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border-radius: 50%;
+            border: 2px solid #fff;
+            z-index: 2;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+        }
+
+        .vinyl-body::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 3;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* ================= TRACKBAR MEJORADO ================= */
+        .timeline-box {
+            width: 100%;
+            transform: translateZ(45px);
+            margin-top: 5px;
+        }
+
+        .time-counter {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 10px;
+            padding: 0 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .progress-rail {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.15);
+            touch-action: none; 
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ffffff, #ffeef2);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 0 15px rgba(255,255,255,0.8);
+            pointer-events: none;
+            /* Transición fluida al dar saltos de 10s */
+            transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* Al arrastrar la barra, quitamos la transición para que no se sienta lenta */
+        .progress-fill.dragging {
+            transition: none;
+        }
+
+        .progress-rail::after {
+            content: '';
+            position: absolute;
+            left: var(--progress-pos, 0%);
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 18px;
+            height: 18px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s ease, left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            pointer-events: none;
+        }
+
+        .progress-rail.dragging::after {
+            transition: opacity 0.3s ease; /* Quitamos transición de 'left' al arrastrar */
+        }
+
+        .progress-rail:hover::after, .progress-rail:active::after { opacity: 1; }
+
+        /* ================= BOTONES ================= */
+        .controls-hub {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            transform: translateZ(55px);
+        }
+
+        .btn-action {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .btn-action svg {
+            fill: #ffffff;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            transition: transform 0.2s ease;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.15);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-action:active {
+            transform: scale(0.9);
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .btn-action:active svg {
+            transform: scale(0.85);
+        }
+
+        .btn-master-play {
+            width: 72px;
+            height: 72px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2), inset 0 -4px 8px rgba(0,0,0,0.1);
+            border: 1px solid #ffffff;
+        }
+
+        .btn-master-play svg {
+            fill: #a18cd1;
+            filter: none;
+            width: 34px;
+            height: 34px;
+        }
+
+        .btn-master-play:hover {
+            transform: scale(1.1) translateY(-3px);
+            background: #ffffff;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        }
+        
+        .btn-master-play:active {
+            transform: scale(0.95);
+        }
+
+        .btn-master-play:hover svg { fill: #ff9a9e; }
+
+        @media (max-width: 400px) {
+            .player-card { padding: 45px 28px 40px 28px; border-radius: 40px; gap: 20px;}
+            .title { font-size: 2.1rem; }
+            .subtitle { font-size: 1.2rem; }
+            .vinculo-frame { max-width: 180px; }
+            .controls-hub { gap: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hearts-container"></div>
+
+    <div class="interactive-stage" id="interactiveStage">
+        <div class="player-card" id="playerCard">
+
+            <div class="title-group">
+                <h1 class="title">Nuestra Canción</h1>
+                <h2 class="subtitle">Te amo mi amor ❤️</h2>
+            </div>
+
+            <div class="vinculo-frame">
+                <img src="vinculo.png" alt="Vínculo" class="vinculo-img" id="vinculoImg" onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=600&auto=format&fit=crop';">
+            </div>
+
+            <div class="vinyl-deck">
+                <div class="vinyl-body" id="vinylBody"></div>
+            </div>
+
+            <div class="timeline-box">
+                <div class="time-counter">
+                    <span id="timeCurrent">0:00</span>
+                    <span id="timeTotal">0:00</span>
+                </div>
+                <div class="progress-rail" id="progressRail">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div class="controls-hub">
+                <button class="btn-action" id="btnRewind" title="Atrasar 10 segundos">
+                    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg>
+                </button>
+                
+                <button class="btn-action btn-master-play" id="btnPlayPause">
+                    <svg id="svgPlay" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg id="svgPause" viewBox="0 0 24 24" style="display: none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+
+                <button class="btn-action" id="btnForward" title="Adelantar 10 segundos">
+                    <svg width="34" height="34" viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <audio id="audioMain" src="vinculo.mp3" preload="auto"></audio>
+    <audio id="audioClick" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
+
+    <script>
+        /* ================= SISTEMA DE CORAZONES FLOTANTES ================= */
+        function createHeart() {
+            const container = document.getElementById('hearts-container');
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 5 + 5 + 's'; // Entre 5 y 10 segundos (más suave)
+            heart.style.fontSize = Math.random() * 18 + 12 + 'px'; // Tamaños variados
+            container.appendChild(heart);
+            setTimeout(() => heart.remove(), 10000); 
+        }
+        setInterval(createHeart, 700); 
+
+        /* ================= VARIABLES PRINCIPALES ================= */
+        const playerCard = document.getElementById('playerCard');
+        const interactiveStage = document.getElementById('interactiveStage');
+        const audioMain = document.getElementById('audioMain');
+        const audioClick = document.getElementById('audioClick');
+        
+        const btnPlayPause = document.getElementById('btnPlayPause');
+        const btnRewind = document.getElementById('btnRewind');
+        const btnForward = document.getElementById('btnForward');
+        
+        const svgPlay = document.getElementById('svgPlay');
+        const svgPause = document.getElementById('svgPause');
+        const vinylBody = document.getElementById('vinylBody');
+        
+        const progressRail = document.getElementById('progressRail');
+        const progressFill = document.getElementById('progressFill');
+        const timeCurrent = document.getElementById('timeCurrent');
+        const timeTotal = document.getElementById('timeTotal');
+
+        let isMusicPlaying = false;
+        let isTimelineDragging = false;
+
+        audioClick.volume = 0.15;
+
+        // Fallback de canción si falla
+        audioMain.addEventListener('error', () => {
+            if (!audioMain.dataset.fallback) {
+                audioMain.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; 
+                audioMain.dataset.fallback = "true";
+            }
+        });
+
+        const formatTimeUnits = (seconds) => {
+            if (isNaN(seconds) || seconds === Infinity) return "0:00";
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        };
+
+        const executeClickSfx = () => {
+            audioClick.currentTime = 0;
+            audioClick.play().catch(() => {});
+        };
+
+        /* ================= REPRODUCCIÓN ================= */
+        const togglePlaybackState = () => {
+            executeClickSfx();
+            if (isMusicPlaying) {
+                audioMain.pause();
+                svgPlay.style.display = 'block';
+                svgPause.style.display = 'none';
+                vinylBody.style.animationPlayState = 'paused';
+                playerCard.classList.remove('music-playing');
+            } else {
+                audioMain.play().then(() => {
+                    svgPlay.style.display = 'none';
+                    svgPause.style.display = 'block';
+                    vinylBody.style.animationPlayState = 'running';
+                    playerCard.classList.add('music-playing');
+                }).catch(() => {});
+            }
+            isMusicPlaying = !isMusicPlaying;
+        };
+
+        btnPlayPause.addEventListener('click', togglePlaybackState);
+
+        audioMain.addEventListener('loadedmetadata', () => {
+            timeTotal.innerText = formatTimeUnits(audioMain.duration);
+        });
+
+        // Actualización de la barra de progreso
+        audioMain.addEventListener('timeupdate', () => {
+            if (isTimelineDragging) return; 
+            const current = audioMain.currentTime;
+            const duration = audioMain.duration;
+            if (duration) {
+                const pct = (current / duration) * 100;
+                progressFill.style.width = `${pct}%`;
+                progressRail.style.setProperty('--progress-pos', `${pct}%`);
+                timeCurrent.innerText = formatTimeUnits(current);
+                timeTotal.innerText = formatTimeUnits(duration);
+            }
+        });
+
+        audioMain.addEventListener('ended', () => {
+            isMusicPlaying = false;
+            svgPlay.style.display = 'block';
+            svgPause.style.display = 'none';
+            vinylBody.style.animationPlayState = 'paused';
+            playerCard.classList.remove('music-playing');
+            progressFill.style.width = '0%';
+            progressRail.style.setProperty('--progress-pos', '0%');
+            audioMain.currentTime = 0;
+            timeCurrent.innerText = "0:00";
+        });
+
+        /* ================= LÓGICA DE BARRA DESLIZABLE ================= */
+        const processTimelineInteraction = (e) => {
+            const rect = progressRail.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const currentX = Math.max(0, Math.min(clientX - rect.left, rect.width));
+            const targetedPercentage = currentX / rect.width;
+            
+            progressFill.style.width = `${targetedPercentage * 100}%`;
+            progressRail.style.setProperty('--progress-pos', `${targetedPercentage * 100}%`);
+            
+            if (audioMain.duration) {
+                const targetTime = targetedPercentage * audioMain.duration;
+                timeCurrent.innerText = formatTimeUnits(targetTime);
+                if (!isTimelineDragging) audioMain.currentTime = targetTime;
+            }
+            return targetedPercentage;
+        };
+
+        const startDragging = (e) => {
+            isTimelineDragging = true;
+            progressFill.classList.add('dragging');
+            progressRail.classList.add('dragging');
+            processTimelineInteraction(e);
+        };
+
+        const stopDragging = (e) => {
+            if (isTimelineDragging) {
+                isTimelineDragging = false;
+                progressFill.classList.remove('dragging');
+                progressRail.classList.remove('dragging');
+                if (audioMain.duration && e) {
+                    audioMain.currentTime = processTimelineInteraction(e) * audioMain.duration;
+                }
+            }
+        };
+
+        progressRail.addEventListener('mousedown', startDragging);
+        progressRail.addEventListener('touchstart', startDragging, { passive: true });
+        window.addEventListener('mousemove', (e) => { if (isTimelineDragging) processTimelineInteraction(e); });
+        window.addEventListener('touchmove', (e) => { if (isTimelineDragging) processTimelineInteraction(e); }, { passive: true });
+        window.addEventListener('mouseup', stopDragging);
+        window.addEventListener('touchend', () => stopDragging(null));
+
+        /* ================= SALTOS EXACTOS DE 10 SEGUNDOS ================= */
+        const skipTime = (seconds) => {
+            if (!audioMain.duration) return;
+            executeClickSfx();
+            
+            let newTime = audioMain.currentTime + seconds;
+            // Evitar pasarse del inicio o del final
+            newTime = Math.max(0, Math.min(newTime, audioMain.duration));
+            
+            audioMain.currentTime = newTime;
+            
+            // Forzar actualización visual inmediata (fluida gracias a la transición CSS)
+            const pct = (newTime / audioMain.duration) * 100;
+            progressFill.style.width = `${pct}%`;
+            progressRail.style.setProperty('--progress-pos', `${pct}%`);
+            timeCurrent.innerText = formatTimeUnits(newTime);
+        };
+
+        btnRewind.addEventListener('click', () => skipTime(-10));
+        btnForward.addEventListener('click', () => skipTime(10));
+
+        /* ================= PARALLAX 3D OPTIMIZADO ================= */
+        const computeMotionVector = (clientX, clientY) => {
+            playerCard.classList.add('interacting'); // Quita la transición lenta mientras mueves el dedo/ratón
+            const cardRect = playerCard.getBoundingClientRect();
+            const posX = clientX - cardRect.left;
+            const posY = clientY - cardRect.top;
+            const centerPointX = cardRect.width / 2;
+            const centerPointY = cardRect.height / 2;
+            // Multiplicador ajustado para que sea sutil pero notorio
+            const rotationX = -((posY - centerPointY) / centerPointY) * 15;
+            const rotationY = ((posX - centerPointX) / centerPointX) * 15;
+            playerCard.style.setProperty('--rx', `${rotationX}deg`);
+            playerCard.style.setProperty('--ry', `${rotationY}deg`);
+        };
+
+        const resetMotionVector = () => {
+            playerCard.classList.remove('interacting'); // Vuelve a activar la transición elástica
+            playerCard.style.setProperty('--rx', '0deg');
+            playerCard.style.setProperty('--ry', '0deg');
+        };
+
+        interactiveStage.addEventListener('mousemove', (e) => computeMotionVector(e.clientX, e.clientY));
+        interactiveStage.addEventListener('mouseleave', resetMotionVector);
+        
+        interactiveStage.addEventListener('touchmove', (e) => { 
+            if (e.touches.length > 0) computeMotionVector(e.touches[0].clientX, e.touches[0].clientY); 
+        }, { passive: true });
+        interactiveStage.addEventListener('touchend', resetMotionVector);
+
+        // Previene el menú contextual molesto en móviles al tocar rápido
+        document.querySelectorAll('.btn-action, .progress-rail').forEach(el => el.addEventListener('contextmenu', e => e.preventDefault()));
+    </script>
+</body>
+</html>
